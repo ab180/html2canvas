@@ -15,6 +15,12 @@ export type Options = CloneOptions &
         foreignObjectRendering: boolean;
         logging: boolean;
         removeContainer?: boolean;
+        scrollPositions?: {
+            [className: string]: {
+                x: number;
+                y: number;
+            };
+        };
     };
 
 const parseColor = (value: string): Color => color.parse(Parser.create(value).parseComponentValue());
@@ -67,6 +73,7 @@ const renderElement = async (element: HTMLElement, opts: Partial<Options>): Prom
         windowHeight: defaultView.innerHeight,
         scrollX: defaultView.pageXOffset,
         scrollY: defaultView.pageYOffset,
+        scrollPositions: {},
         x: left,
         y: top,
         width: Math.ceil(width),
@@ -130,6 +137,18 @@ const renderElement = async (element: HTMLElement, opts: Partial<Options>): Prom
         windowWidth: options.windowWidth,
         windowHeight: options.windowHeight
     };
+
+    if (options.scrollPositions) {
+        Object.keys(options.scrollPositions).forEach((className) => {
+            const { x, y } = options.scrollPositions![className];
+            const target = clonedElement.querySelector(className);
+    
+            if (target) {
+                target.scrollLeft = x;
+                target.scrollTop = y;
+            }
+        });
+    }
 
     let canvas;
 
