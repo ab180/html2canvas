@@ -107,7 +107,7 @@
     "watch": "rollup -c rollup.config.ts -w",
     "watch:unittest": "mocha --require ts-node/register --watch-extensions ts -w src/**/__tests__/*.ts",
     "start": "node tests/server",
-    "postinstall": "npm run build"
+    "postinstall": "npm install && npm run build"
   },
   "homepage": "https://html2canvas.hertzen.com",
   "license": "MIT",
