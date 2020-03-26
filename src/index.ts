@@ -21,6 +21,7 @@ export type Options = CloneOptions &
                 y: number;
             };
         };
+        fullScreen: boolean;
     };
 
 const parseColor = (value: string): Color => color.parse(Parser.create(value).parseComponentValue());
@@ -74,6 +75,7 @@ const renderElement = async (element: HTMLElement, opts: Partial<Options>): Prom
         scrollX: defaultView.pageXOffset,
         scrollY: defaultView.pageYOffset,
         scrollPositions: {},
+        fullScreen: false,
         x: left,
         y: top,
         width: Math.ceil(width),
@@ -142,11 +144,40 @@ const renderElement = async (element: HTMLElement, opts: Partial<Options>): Prom
         Object.keys(options.scrollPositions).forEach((className) => {
             const { x, y } = options.scrollPositions![className];
             const target = clonedElement.querySelector(className);
-    
+
             if (target) {
                 target.scrollLeft = x;
                 target.scrollTop = y;
             }
+        });
+    }
+
+    const tickContainer = clonedElement.querySelectorAll('.recharts-surface');
+    const tickElements = clonedElement.querySelectorAll('.recharts-cartesian-grid-horizontal');
+    const extractTickElements: (HTMLElement | null)[] = [];
+    const standardWidth = renderOptions.windowWidth;
+
+    if (options.fullScreen) {
+        tickContainer.forEach(item => {
+            const itemAttr = item.getAttribute('viewBox')!.split(' ');
+
+            const result = itemAttr.map((attr, index) => {
+                if (index === 2) {
+                    return `${standardWidth}`;
+                }
+                return attr;
+            });
+            item.setAttribute('width', `${standardWidth}`);
+            item.setAttribute('viewBox', result.join(' '));
+        });
+
+        tickElements.forEach(item => {
+            extractTickElements.push(item.parentElement);
+            const tick = item.querySelectorAll('line');
+            tick.forEach(tickItem => {
+                tickItem.setAttribute('x2', `${standardWidth}`);
+                tickItem.setAttribute('width', `${standardWidth}`);
+            });
         });
     }
 
