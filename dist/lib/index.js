@@ -66,7 +66,7 @@ if (typeof window !== "undefined") {
     cache_storage_1.CacheStorage.setContext(window);
 }
 var renderElement = function (element, opts) { return __awaiter(_this, void 0, void 0, function () {
-    var ownerDocument, defaultView, instanceName, _a, width, height, left, top, defaultResourceOptions, resourceOptions, defaultOptions, options, windowBounds, documentCloner, clonedElement, container, documentBackgroundColor, bodyBackgroundColor, bgColor, defaultBackgroundColor, backgroundColor, renderOptions, tickContainer, tickElements, extractTickElements, standardWidth, canvas, renderer, root, renderer;
+    var ownerDocument, defaultView, instanceName, _a, width, height, left, top, defaultResourceOptions, resourceOptions, defaultOptions, options, windowBounds, documentCloner, clonedElement, container, documentBackgroundColor, bodyBackgroundColor, bgColor, defaultBackgroundColor, backgroundColor, renderOptions, tickContainer, tickElements, extractTickElements, standardWidth, editFontElement, canvas, renderer, root, renderer;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -154,6 +154,7 @@ var renderElement = function (element, opts) { return __awaiter(_this, void 0, v
                     windowWidth: options.windowWidth,
                     windowHeight: options.windowHeight
                 };
+                //// AB180 Custom
                 if (options.scrollPositions) {
                     Object.keys(options.scrollPositions).forEach(function (className) {
                         var _a = options.scrollPositions[className], x = _a.x, y = _a.y;
@@ -187,6 +188,12 @@ var renderElement = function (element, opts) { return __awaiter(_this, void 0, v
                             tickItem.setAttribute('x2', "" + standardWidth);
                             tickItem.setAttribute('width', "" + standardWidth);
                         });
+                    });
+                }
+                editFontElement = clonedElement.querySelectorAll('tspan');
+                if (editFontElement) {
+                    editFontElement.forEach(function (item) {
+                        item.setAttribute('font-family', window.getComputedStyle(item, null).getPropertyValue('font-family'));
                     });
                 }
                 if (!options.foreignObjectRendering) return [3 /*break*/, 3];
