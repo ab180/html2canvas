@@ -157,7 +157,12 @@ const renderElement = async (element: HTMLElement, opts: Partial<Options>): Prom
     const tickElements = clonedElement.querySelectorAll('.recharts-cartesian-grid-horizontal');
     const extractTickElements: (HTMLElement | null)[] = [];
     const standardWidth = renderOptions.windowWidth;
+    const setElementWidth = clonedElement.querySelector('.LagTime__Graph')?.childNodes[1];
 
+    // Lag Time - Set Legend width
+    if (setElementWidth) {
+        setElementWidth.style.width = '180px';
+    }
     if (options.fullScreen) {
         tickContainer.forEach(item => {
             const itemAttr = item.getAttribute('viewBox')!.split(' ');
@@ -191,6 +196,7 @@ const renderElement = async (element: HTMLElement, opts: Partial<Options>): Prom
             );
         });
     }
+
 
     // Library
     let canvas;
