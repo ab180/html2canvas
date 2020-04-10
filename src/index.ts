@@ -140,6 +140,7 @@ const renderElement = async (element: HTMLElement, opts: Partial<Options>): Prom
         windowHeight: options.windowHeight
     };
 
+    //// AB180 Custom
     if (options.scrollPositions) {
         Object.keys(options.scrollPositions).forEach((className) => {
             const { x, y } = options.scrollPositions![className];
@@ -181,6 +182,17 @@ const renderElement = async (element: HTMLElement, opts: Partial<Options>): Prom
         });
     }
 
+    const editFontElement = clonedElement.querySelectorAll('tspan');
+    if (editFontElement) {
+        editFontElement.forEach(item => {
+            item.setAttribute(
+                'font-family',
+                window.getComputedStyle(item, null).getPropertyValue('font-family')
+            );
+        });
+    }
+
+    // Library
     let canvas;
 
     if (options.foreignObjectRendering) {
