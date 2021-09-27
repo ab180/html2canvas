@@ -4,26 +4,49 @@
 const path = require('path');
 const simctl = require('node-simctl');
 const iosSimulator = require('appium-ios-simulator');
+const listenAddress = 'localhost';
 const port = 9876;
 
 const log = require('karma/lib/logger').create('launcher:MobileSafari');
 
 module.exports = function(config) {
+    // https://github.com/actions/virtual-environments/blob/master/images/macos/macos-10.15-Readme.md
     const launchers = {
         Safari_IOS_9: {
             base: 'MobileSafari',
             name: 'iPhone 5s',
+            platform: 'iOS',
             sdk: '9.0'
         },
         Safari_IOS_10: {
             base: 'MobileSafari',
             name: 'iPhone 5s',
+            platform: 'iOS',
             sdk: '10.0'
         },
         Safari_IOS_12: {
             base: 'MobileSafari',
             name: 'iPhone 5s',
-            sdk: '12.1'
+            platform: 'iOS',
+            sdk: '12.4'
+        },
+        Safari_IOS_13: {
+            base: 'MobileSafari',
+            name: 'iPhone 8',
+            platform: 'iOS',
+            sdk: '13.6'
+        },
+        Safari_IOS_14: {
+            base: 'MobileSafari',
+            name: 'iPhone 8',
+            platform: 'iOS',
+            sdk: '14.0'
+        },
+        Safari_IOS_15: {
+            base: 'MobileSafari',
+            name: 'iPhone 8',
+            platform: 'iOS',
+            sdk: '15.0'
         },
         SauceLabs_IE9: {
             base: 'SauceLabs',
@@ -85,10 +108,10 @@ module.exports = function(config) {
             flags: ['-extoff']
         },
         Safari_Stable: {
-            base: 'Safari'
+            base: 'SafariNative'
         },
         Chrome_Stable: {
-            base: 'Chrome'
+            base: 'ChromeHeadless'
         },
         Firefox_Stable: {
             base: 'Firefox'
@@ -99,7 +122,7 @@ module.exports = function(config) {
 
     const customLaunchers = ciLauncher ? {target_browser: ciLauncher} : {
         stable_chrome: {
-            base: 'Chrome'
+            base: 'ChromeHeadless'
         },
         stable_firefox: {
             base: 'Firefox'
@@ -125,8 +148,8 @@ module.exports = function(config) {
         }
         baseBrowserDecorator(this);
         this.on('start', url => {
-            simctl.getDevices().then(devices => {
-                const d = devices[args.sdk].find(d => {
+            simctl.getDevices(args.sdk, args.platform).then(devices => {
+                const d = devices.find(d => {
                     return d.name === args.name;
                 });
 
@@ -207,6 +230,9 @@ module.exports = function(config) {
         junitReporter: {
             outputDir: 'tmp/junit/'
         },
+
+        // web server listen address,
+        listenAddress,
 
         // web server port
         port,
