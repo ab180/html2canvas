@@ -76,28 +76,6 @@ const renderElement = async (element: HTMLElement, opts: Partial<Options>): Prom
         windowOptions.windowHeight
     );
 
-    // ab180 custom
-    const defaultOptions = {
-        backgroundColor: '#ffffff',
-        cache: opts.cache ? opts.cache : CacheStorage.create(instanceName, resourceOptions),
-        logging: true,
-        removeContainer: true,
-        foreignObjectRendering: false,
-        scale: defaultView.devicePixelRatio || 1,
-        windowWidth: defaultView.innerWidth,
-        windowHeight: defaultView.innerHeight,
-        scrollX: defaultView.pageXOffset,
-        scrollY: defaultView.pageYOffset,
-        scrollPositions: {},
-        fullScreen: false,
-        x: left,
-        y: top,
-        width: Math.ceil(width),
-        height: Math.ceil(height),
-        id: instanceName  
-    };
-
-    // upstream
     const context = new Context(contextOptions, windowBounds);
 
     const foreignObjectRendering = opts.foreignObjectRendering ?? false;
@@ -109,7 +87,6 @@ const renderElement = async (element: HTMLElement, opts: Partial<Options>): Prom
         inlineImages: foreignObjectRendering,
         copyStyles: foreignObjectRendering
     };
-    // end
 
     context.logger.debug(
         `Starting document clone with size ${windowBounds.width}x${
@@ -143,9 +120,9 @@ const renderElement = async (element: HTMLElement, opts: Partial<Options>): Prom
     };
 
     //// AB180 Custom
-    if (options.scrollPositions) {
-        Object.keys(options.scrollPositions).forEach((className) => {
-            const { x, y } = options.scrollPositions![className];
+    if (opts.scrollPositions) {
+        Object.keys(opts.scrollPositions).forEach((className) => {
+            const {x, y} = opts.scrollPositions![className];
             const target = clonedElement.querySelector(className);
 
             if (target) {
@@ -155,45 +132,54 @@ const renderElement = async (element: HTMLElement, opts: Partial<Options>): Prom
         });
     }
 
+    const tickWrapper = clonedElement.querySelectorAll('.recharts-wrapper');
     const tickContainer = clonedElement.querySelectorAll('.recharts-surface');
     const tickElements = clonedElement.querySelectorAll('.recharts-cartesian-grid-horizontal');
-    const extractTickElements: (HTMLElement | null)[] = [];
-    const standardWidth = renderOptions.windowWidth;
+    const standardWidth = windowOptions.windowWidth;
 
-    if (options.fullScreen) {
-        tickContainer.forEach(item => {
-            const itemAttr = item.getAttribute('viewBox')!.split(' ');
+    if (opts.fullScreen) {
+        tickWrapper.forEach((item, index) => {
+            if (tickWrapper.length / 2 <= index) {
+                const itemStyle = item.getAttribute('style');
 
-            const result = itemAttr.map((attr, index) => {
-                if (index === 2) {
-                    return `${standardWidth}`;
-                }
-                return attr;
-            });
-            item.setAttribute('width', `${standardWidth}`);
-            item.setAttribute('viewBox', result.join(' '));
+                item.setAttribute('style', `${itemStyle} width: fit-content;`);
+            }
         });
 
-        tickElements.forEach(item => {
-            extractTickElements.push(item.parentElement);
+        tickContainer.forEach((item, index) => {
+            if (tickContainer.length / 2 <= index) {
+                const itemStyle = item.getAttribute('style');
+                const itemAttr = item.getAttribute('viewBox')!.split(' ');
+
+                const result = itemAttr
+                    .map((attr, index) => {
+                        if (index === 2) {
+                            return `${standardWidth}`;
+                        }
+                        return attr;
+                    })
+                    .join(' ');
+
+                item.setAttribute('style', `${itemStyle} width: ${standardWidth}px;`);
+                item.setAttribute('viewBox', result);
+            }
+        });
+
+        tickElements.forEach((item) => {
             const tick = item.querySelectorAll('line');
-            tick.forEach(tickItem => {
+
+            tick.forEach((tickItem) => {
                 tickItem.setAttribute('x2', `${standardWidth}`);
-                tickItem.setAttribute('width', `${standardWidth}`);
             });
         });
     }
 
     const editFontElement = clonedElement.querySelectorAll('tspan');
     if (editFontElement) {
-        editFontElement.forEach(item => {
-            item.setAttribute(
-                'font-family',
-                window.getComputedStyle(item, null).getPropertyValue('font-family')
-            );
+        editFontElement.forEach((item) => {
+            item.setAttribute('font-family', window.getComputedStyle(item, null).getPropertyValue('font-family'));
         });
     }
-
 
     // Library
     let canvas;
