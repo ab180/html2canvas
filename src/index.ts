@@ -132,11 +132,20 @@ const renderElement = async (element: HTMLElement, opts: Partial<Options>): Prom
         });
     }
 
+    const tickWrapper = clonedElement.querySelectorAll('.recharts-wrapper');
     const tickContainer = clonedElement.querySelectorAll('.recharts-surface');
     const tickElements = clonedElement.querySelectorAll('.recharts-cartesian-grid-horizontal');
     const standardWidth = windowOptions.windowWidth;
 
     if (opts.fullScreen) {
+        tickWrapper.forEach((item, index) => {
+            if (tickWrapper.length / 2 <= index) {
+                const itemStyle = item.getAttribute('style');
+
+                item.setAttribute('style', `${itemStyle} width: fit-content;`);
+            }
+        });
+
         tickContainer.forEach((item, index) => {
             if (tickContainer.length / 2 <= index) {
                 const itemStyle = item.getAttribute('style');
