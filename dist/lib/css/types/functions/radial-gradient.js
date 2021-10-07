@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.radialGradient = exports.CONTAIN = exports.COVER = exports.ELLIPSE = exports.CIRCLE = exports.FARTHEST_CORNER = exports.CLOSEST_CORNER = exports.FARTHEST_SIDE = exports.CLOSEST_SIDE = void 0;
 var parser_1 = require("../../syntax/parser");
-var image_1 = require("../image");
 var gradient_1 = require("./gradient");
 var length_percentage_1 = require("../length-percentage");
 var length_1 = require("../length");
@@ -13,18 +13,18 @@ exports.CIRCLE = 'circle';
 exports.ELLIPSE = 'ellipse';
 exports.COVER = 'cover';
 exports.CONTAIN = 'contain';
-exports.radialGradient = function (tokens) {
-    var shape = image_1.CSSRadialShape.CIRCLE;
-    var size = image_1.CSSRadialExtent.FARTHEST_CORNER;
+var radialGradient = function (context, tokens) {
+    var shape = 0 /* CIRCLE */;
+    var size = 3 /* FARTHEST_CORNER */;
     var stops = [];
     var position = [];
-    parser_1.parseFunctionArgs(tokens).forEach(function (arg, i) {
+    (0, parser_1.parseFunctionArgs)(tokens).forEach(function (arg, i) {
         var isColorStop = true;
         if (i === 0) {
             var isAtPosition_1 = false;
             isColorStop = arg.reduce(function (acc, token) {
                 if (isAtPosition_1) {
-                    if (parser_1.isIdentToken(token)) {
+                    if ((0, parser_1.isIdentToken)(token)) {
                         switch (token.value) {
                             case 'center':
                                 position.push(length_percentage_1.FIFTY_PERCENT);
@@ -39,38 +39,38 @@ exports.radialGradient = function (tokens) {
                                 return acc;
                         }
                     }
-                    else if (length_percentage_1.isLengthPercentage(token) || length_1.isLength(token)) {
+                    else if ((0, length_percentage_1.isLengthPercentage)(token) || (0, length_1.isLength)(token)) {
                         position.push(token);
                     }
                 }
-                else if (parser_1.isIdentToken(token)) {
+                else if ((0, parser_1.isIdentToken)(token)) {
                     switch (token.value) {
                         case exports.CIRCLE:
-                            shape = image_1.CSSRadialShape.CIRCLE;
+                            shape = 0 /* CIRCLE */;
                             return false;
                         case exports.ELLIPSE:
-                            shape = image_1.CSSRadialShape.ELLIPSE;
+                            shape = 1 /* ELLIPSE */;
                             return false;
                         case 'at':
                             isAtPosition_1 = true;
                             return false;
                         case exports.CLOSEST_SIDE:
-                            size = image_1.CSSRadialExtent.CLOSEST_SIDE;
+                            size = 0 /* CLOSEST_SIDE */;
                             return false;
                         case exports.COVER:
                         case exports.FARTHEST_SIDE:
-                            size = image_1.CSSRadialExtent.FARTHEST_SIDE;
+                            size = 1 /* FARTHEST_SIDE */;
                             return false;
                         case exports.CONTAIN:
                         case exports.CLOSEST_CORNER:
-                            size = image_1.CSSRadialExtent.CLOSEST_CORNER;
+                            size = 2 /* CLOSEST_CORNER */;
                             return false;
                         case exports.FARTHEST_CORNER:
-                            size = image_1.CSSRadialExtent.FARTHEST_CORNER;
+                            size = 3 /* FARTHEST_CORNER */;
                             return false;
                     }
                 }
-                else if (length_1.isLength(token) || length_percentage_1.isLengthPercentage(token)) {
+                else if ((0, length_1.isLength)(token) || (0, length_percentage_1.isLengthPercentage)(token)) {
                     if (!Array.isArray(size)) {
                         size = [];
                     }
@@ -81,10 +81,11 @@ exports.radialGradient = function (tokens) {
             }, isColorStop);
         }
         if (isColorStop) {
-            var colorStop = gradient_1.parseColorStop(arg);
+            var colorStop = (0, gradient_1.parseColorStop)(context, arg);
             stops.push(colorStop);
         }
     });
-    return { size: size, shape: shape, stops: stops, position: position, type: image_1.CSSImageType.RADIAL_GRADIENT };
+    return { size: size, shape: shape, stops: stops, position: position, type: 2 /* RADIAL_GRADIENT */ };
 };
+exports.radialGradient = radialGradient;
 //# sourceMappingURL=radial-gradient.js.map

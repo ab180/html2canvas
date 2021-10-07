@@ -1,17 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var IPropertyDescriptor_1 = require("../IPropertyDescriptor");
+exports.fontWeight = void 0;
 var parser_1 = require("../syntax/parser");
 exports.fontWeight = {
     name: 'font-weight',
     initialValue: 'normal',
-    type: IPropertyDescriptor_1.PropertyDescriptorParsingType.VALUE,
+    type: 0 /* VALUE */,
     prefix: false,
-    parse: function (token) {
-        if (parser_1.isNumberToken(token)) {
+    parse: function (_context, token) {
+        if ((0, parser_1.isNumberToken)(token)) {
             return token.number;
         }
-        if (parser_1.isIdentToken(token)) {
+        if ((0, parser_1.isIdentToken)(token)) {
             switch (token.value) {
                 case 'bold':
                     return 700;

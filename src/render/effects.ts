@@ -3,7 +3,8 @@ import {Path} from './path';
 
 export const enum EffectType {
     TRANSFORM = 0,
-    CLIP = 1
+    CLIP = 1,
+    OPACITY = 2
 }
 
 export const enum EffectTarget {
@@ -17,33 +18,26 @@ export interface IElementEffect {
 }
 
 export class TransformEffect implements IElementEffect {
-    readonly type: EffectType;
-    readonly target: number;
-    readonly offsetX: number;
-    readonly offsetY: number;
-    readonly matrix: Matrix;
+    readonly type: EffectType = EffectType.TRANSFORM;
+    readonly target: number = EffectTarget.BACKGROUND_BORDERS | EffectTarget.CONTENT;
 
-    constructor(offsetX: number, offsetY: number, matrix: Matrix) {
-        this.type = EffectType.TRANSFORM;
-        this.offsetX = offsetX;
-        this.offsetY = offsetY;
-        this.matrix = matrix;
-        this.target = EffectTarget.BACKGROUND_BORDERS | EffectTarget.CONTENT;
-    }
+    constructor(readonly offsetX: number, readonly offsetY: number, readonly matrix: Matrix) {}
 }
 
 export class ClipEffect implements IElementEffect {
-    readonly type: EffectType;
-    readonly target: number;
-    readonly path: Path[];
+    readonly type: EffectType = EffectType.CLIP;
 
-    constructor(path: Path[], target: EffectTarget) {
-        this.type = EffectType.CLIP;
-        this.target = target;
-        this.path = path;
-    }
+    constructor(readonly path: Path[], readonly target: EffectTarget) {}
+}
+
+export class OpacityEffect implements IElementEffect {
+    readonly type: EffectType = EffectType.OPACITY;
+    readonly target: number = EffectTarget.BACKGROUND_BORDERS | EffectTarget.CONTENT;
+
+    constructor(readonly opacity: number) {}
 }
 
 export const isTransformEffect = (effect: IElementEffect): effect is TransformEffect =>
     effect.type === EffectType.TRANSFORM;
 export const isClipEffect = (effect: IElementEffect): effect is ClipEffect => effect.type === EffectType.CLIP;
+export const isOpacityEffect = (effect: IElementEffect): effect is OpacityEffect => effect.type === EffectType.OPACITY;

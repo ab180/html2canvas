@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var IPropertyDescriptor_1 = require("../IPropertyDescriptor");
+exports.borderLeftWidth = exports.borderBottomWidth = exports.borderRightWidth = exports.borderTopWidth = void 0;
 var parser_1 = require("../syntax/parser");
 var borderWidthForSide = function (side) { return ({
     name: "border-" + side + "-width",
     initialValue: '0',
-    type: IPropertyDescriptor_1.PropertyDescriptorParsingType.VALUE,
+    type: 0 /* VALUE */,
     prefix: false,
-    parse: function (token) {
-        if (parser_1.isDimensionToken(token)) {
+    parse: function (_context, token) {
+        if ((0, parser_1.isDimensionToken)(token)) {
             return token.number;
         }
         return 0;
