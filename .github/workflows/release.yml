@@ -1,37 +1,28 @@
-name: Create Release
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Publish Packages
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Semantic version (major | minor | patch | premajor | preminor | prepatch | prerelease)'
-        default: 'patch'
-        required: true
-        
+  release:
+    types:
+      - created
+
 jobs:
-  version:
-    name: Create version
+  build:
+
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
       with:
-        fetch-depth: 0
-        token: ${{ secrets.PAT_TOKEN }}
-    - uses: actions/setup-node@v1
-      with:
-        node-version: 12
-    - name: Npm install
-      run: npm ci
-    - name: Configure git
-      run: |
-        git config user.name "CI"
-        git config user.email "niklasvh@gmail.com"
-    - name: Create release
-      run: npm run release -- --preset eslint --release-as ${{ github.event.inputs.version }}
-    - name: Print details
-      run: |
-        cat package.json
-        cat CHANGELOG.md
-        git tag
-    - name: Push git version
-      run: git push --follow-tags origin master
+        node-version: '12.x'
+        registry-url: https://registry.npmjs.org/
+        scope: '@airbridge'
+
+    - name: Publish to npm
+      run: npm publish --access public
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
